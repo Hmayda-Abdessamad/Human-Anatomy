@@ -1,0 +1,71 @@
+<div class="parent-container" >
+
+        <div class="container ">
+            <div class="row justify-content-end my-5 ">
+                    <form class="d-flex col-6">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-warning" type="submit">Search</button>
+                    </form>
+
+            </div>
+        </div>
+
+        <div class="container">
+        <div class="row row-cols-1 row-cols-md-3 g-4 " >
+
+            <div class="col"  *ngFor="let organ of organs">
+                <div class="card d-flex h-100">
+                    <div class="row g-0">
+                        <div class="col-6">
+                            <img src="{{ this.url + organ.image }}" class="card-img-top w-100" alt="...">
+                        </div>
+                        <div class="col-6">
+                            <div class="card-body">
+                                <h5 class="card-title ">{{ organ.name }}</h5>
+                                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                            </div>
+                        </div>
+                        <div class="card-footer ">
+                            <div class="d-flex justify-content-center">
+                                <button class="btn btn-primary me-2 " data-bs-toggle="modal" data-bs-target="#organ3d" (click)="setSelectedOrgan(organ.id)">View in 3D</button>
+
+                                <div class="dropdown d-inline">
+                                    <button class="btn btn-outline-dark" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="organ3d" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <h5 class="modal-title " id="exampleModalLongTitle">View the {{this.selectedRow?.name}} in 3D </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
+                </button>
+            </div>
+            <div   class="modal-body text-center bg-black">
+                <model-viewer alt="Neil Armstrong's Spacesuit from the Smithsonian Digitization Programs Office and National Air and Space Museum" src="{{this.url+this.selectedRow?.data}}"   class="w-100 " shadow-intensity="2" camera-controls touch-action="pan-y"></model-viewer>
+            </div>
+            <!--
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger"  data-bs-dismiss="modal"  >Yes </button>
+            </div>
+            -->
+        </div>
+    </div>
+</div>
+

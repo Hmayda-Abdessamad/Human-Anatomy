@@ -1,0 +1,185 @@
+
+
+    <div class="parent-container  mat-elevation-z8 p-4 ">
+        <div class="d-flex flex-row w-100 gap-5">
+
+            <button type="button" class="btn btn-success w-25" data-bs-toggle="modal" data-bs-target="#AddCategory">
+                Add new category
+            </button>
+
+            <form [formGroup]="searchForm" class="form align-self-end w-50">
+                <input class="form-control mr-sm-2" type="search" formControlName="mot" placeholder="Search" aria-label="Search" (input)="search()">
+            </form>
+
+        </div>
+
+        <table mat-table matSort [dataSource]="dataSource"   class=" bg-white  my-4 mx-4   " >
+
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="Id">
+                <th mat-header-cell mat-sort-header *matHeaderCellDef class="bg-secondary text-center" > No. </th>
+                <td mat-cell *matCellDef="let row"> {{row.id}} </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="Name">
+                <th  class="bg-secondary text-center" mat-header-cell *matHeaderCellDef > Name </th>
+                <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="Image">
+                <th mat-header-cell *matHeaderCellDef class="bg-secondary text-center"> Image </th>
+                <td mat-cell *matCellDef="let row" class=" "   >
+                    <img src="{{url+row.image}}" class="  " alt="{{row.name}}">
+                </td>
+            </ng-container>
+
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="Description" >
+                <th mat-header-cell *matHeaderCellDef class="bg-secondary text-center"> Description </th>
+                <td mat-cell *matCellDef="let row" class="text-center"> {{row.description}} </td>
+            </ng-container>
+            <ng-container matColumnDef="Actions">
+                <th mat-header-cell *matHeaderCellDef class="bg-secondary "> Actions </th>
+                <td mat-cell *matCellDef="let row">
+                    <div class="flex ">
+                        <button class="btn btn-primary w-100 m-2" data-bs-toggle="modal" data-bs-target="#editCategorie" (click)="SetSelectedRow(row)">Edit</button>
+                        <button class="btn btn-danger w-100 m-2"  data-bs-toggle="modal" data-bs-target="#deleteCategorie" (click)="SetSelectedRow(row)"  >Delete</button>
+                    </div>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[2, 10, 20]" showFirstLastButtons class="bg-white"
+                       aria-label="Select page of periodic elements">
+        </mat-paginator>
+    </div>
+
+
+    <!-- Bootstrap Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteCategorie" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center" id="exampleModalLongTitle">Deleting Categories </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                   Would you like to delete {{selectedRow.name}}
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger"  data-bs-dismiss="modal" (click)="deleteCategory()" >Yes </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bootstrap edit Confirmation Modal -->
+      <div class="modal fade" id="editCategorie" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title text-center" >  Updating   {{selectedRow.name}}  </h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                      </button>
+                  </div>
+                  <div class="modal-body text-center">
+                      <div class="card-body px-4 py-3 px-md-5">
+                          <form [formGroup]="EditForm" class="d-flex flex-column gap-1">
+                            <!-- id input-->
+                              <div class="d-flex gap-3">
+                                  <!-- ID input -->
+                                  <div class="form-outline">
+                                      <label class="form-label" for="form3Example3">ID</label>
+                                      <input class="form-control" type="text" formControlName="id" placeholder="Readonly input here…" readonly>
+                                  </div>
+
+                                  <!-- Name input -->
+                                  <div class="form-outline">
+                                      <label class="form-label" for="form3Example3">Name</label>
+                                      <input type="text" id="form3Example3" formControlName="name" class="form-control" />
+                                  </div>
+                              </div>
+
+                              <div class="form-outline  scrollable-input">
+                                  <label class="form-label" for="form3Example4">Description</label>
+                                  <textarea id="form3Example4" formControlName="description" class="form-control"></textarea>
+                              </div>
+
+                              <div class="form-outline">
+                                  <label class="form-label" for="image">Image</label>
+                                  <div class="d-flex flex-column align-items-center">
+                                      <img id="image" [src]="selectedImage ? getImageUrl(selectedImage) : (url + selectedRow.image)"class="h-25 w-50 rounded-5 my-2" alt="{{selectedRow.name}}">
+                                      <input type="file" id="fileInput" (change)="onFileChanged($event)" accept="image/*" style="display: none">
+                                      <button type="button" class="custom-file-button btn btn-warning"  onclick="document.getElementById('fileInput').click()">change the image </button>
+                                  </div>
+                              </div>
+
+
+                          </form>
+                      </div>
+                  </div>
+                  <div class="modal-footer d-flex justify-content-center">
+                      <button type="button" class="btn btn-primary" data-bs-dismiss="modal"  (click)="setImageToNull()">Close</button>
+                      <button type="button" class="btn btn-success"  data-bs-dismiss="modal" (click)="editCategory(selectedRow.id)" >Confirm </button>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+    <!-- Modal add category  -->
+    <div class="modal fade" id="AddCategory" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center " > Add a new Category </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="card-body px-4 py-3 px-md-5">
+                        <form [formGroup]="AddForm" class="d-flex flex-column gap-1">
+
+                                <!-- Name input -->
+                                <div class="form-outline">
+                                    <label class="form-label" for="name">Name</label>
+                                    <input type="text" id="name" formControlName="name" class="form-control" />
+                                </div>
+
+
+                            <div class="form-outline  scrollable-input">
+                                <label class="form-label" for="desc">Description</label>
+                                <textarea id="desc" formControlName="description" class="form-control"></textarea>
+                            </div>
+
+                            <div class="form-outline">
+                                <div class="d-flex flex-column align-items-center">
+                                    <input type="file" id="im" (change)="onFileChanged2($event)" accept="image/*" style="display: none">
+                                    <button type="button" class="custom-file-button btn btn-warning"  onclick="document.getElementById('im').click()">upload an image </button>
+                                </div>
+                            </div>
+
+
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal"  >Close</button>
+                    <button type="button" class="btn btn-success"  data-bs-dismiss="modal" (click)="addCategory()" >Confirm </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+

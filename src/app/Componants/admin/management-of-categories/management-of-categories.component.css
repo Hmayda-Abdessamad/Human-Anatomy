@@ -1,0 +1,57 @@
+.glassmorphism{
+  background: rgba(255,255,255,0.5);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.25);
+}
+table {
+  width: 20%;
+}
+
+.gray{
+  background: lightslategray;
+
+}
+.parent-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  flex-direction: column/* You can set the height of the parent container according to your requirements */
+}
+.center-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.mat-column-Name  {
+  width: 32px;
+  border-right: 1px solid currentColor;
+  padding-right: 24px;
+  text-align: center;
+  font-weight: bold;
+}
+.mat-column-Description{
+  border-right: 1px solid currentColor;
+  padding-right: 24px;
+  text-align: center;
+  font-weight: bold;
+}
+.mat-column-Image  {
+  border-right: 1px solid currentColor;
+  padding-right: 24px;
+  text-align: center;
+}
+.mat-column-Id{
+  border-right: 1px solid currentColor;
+  padding-right: 24px;
+  text-align: center;
+}
+
+.no-pading{
+  padding: 0 !important;
+}
+/* Add custom CSS styles for the scrollable input */
+
