@@ -22,7 +22,7 @@ export class ManagementOfCategoriesComponent implements OnInit ,AfterViewInit,On
     msgErr!:string
     categories!:Categorie[]
     displayedColumns: string[] = ['Id', 'Name', 'Image', 'Description','Actions'];
-    url= 'http://localhost:8080/api/v1/user/img/download/';
+    url= 'http://localhost:8080/api/v1/files/download/';
     dataSource = new MatTableDataSource(this.categories);
     selectedRow:Categorie={} as Categorie
     AddForm!:FormGroup;
@@ -97,7 +97,7 @@ export class ManagementOfCategoriesComponent implements OnInit ,AfterViewInit,On
 
     }
 
-  selectedImage: File | null = null;
+      selectedImage: File | null = null;
 
   // Function to handle file selection
   onFileChanged(event: Event) {
@@ -130,7 +130,8 @@ export class ManagementOfCategoriesComponent implements OnInit ,AfterViewInit,On
   }
 
 
-  editCategory(id: number) {
+     editCategory(id: number) {
+
     var  updatedData:Categorie = {
       id: id,
       name: this.EditForm.value.name,
@@ -167,11 +168,12 @@ export class ManagementOfCategoriesComponent implements OnInit ,AfterViewInit,On
       window.location.reload();
   }
 
-    ngOnChanges(changes: SimpleChanges): void {
+      ngOnChanges(changes: SimpleChanges): void {
       this.getAllCategories()
-    }
+     }
 
-    addCategory() {
+     addCategory() {
+
         const { name, description, image } = this.AddForm.value;
 
         if (image && name && description) {
@@ -179,16 +181,20 @@ export class ManagementOfCategoriesComponent implements OnInit ,AfterViewInit,On
                 (response) => {
                     console.log('Category added successfully:', response);
                     window.location.reload()
+
                 },
                 (error) => {
                     console.error('Error adding category:', error);
                     // Handle error responses
+                    window.location.reload()
                 }
             );
         } else {
             // Handle validation errors or missing data
         }
-    }
+
+
+     }
 
     search() {
         const searchTerm = this.searchForm.value.mot.toLowerCase().trim();

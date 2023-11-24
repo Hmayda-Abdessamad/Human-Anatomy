@@ -55,7 +55,7 @@ export class CategoriesService {
     updateImageCategory(id: number, image: File): Observable<string> {
         const formData: FormData = new FormData();
         formData.append('id', id.toString());
-        formData.append('img', image, image.name);
+        formData.append('img', image);
 
         const headers = new HttpHeaders();
         headers.append('Content-Type', 'multipart/form-data'); // Usually not needed, Angular handles this

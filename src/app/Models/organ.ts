@@ -5,5 +5,6 @@ export interface Organ {
     name:string;
     image:string,
     data:string,
+    description:string,
     categorie:Categorie
 }
