@@ -22,22 +22,37 @@ export class ManagementOfOrgansComponent implements OnInit, OnChanges {
     selectedRow: Organ | undefined = {} as Organ;
     searchForm!:FormGroup
     addForm!:FormGroup
+    editForm!: FormGroup;
     modelBlobURL: string = ''; // Variable to store the generated Blob URL
     isLoading: boolean = true;
     @ViewChild('searchInput') searchInput!: ElementRef;
     @ViewChild('modelViewer') modelViewer!: ElementRef<ModelViewerElement>;
 
+
     constructor(private service: OrgansService,private formBuilder:FormBuilder,private http:HttpClient,private categorieService:CategoriesService) {}
 
     ngOnInit(): void {
         this.getAllOrgans();
+
         this.searchForm=this.formBuilder.group({
             mot:this.formBuilder.control("",[Validators.required])
         })
+
         this.addForm=this.formBuilder.group({
+
             name:this.formBuilder.control("",[Validators.required]),
             description:this.formBuilder.control("",[Validators.required]),
             categorie:this.formBuilder.control("",[Validators.required]),
+            img:this.formBuilder.control([Validators.required]),
+            data:this.formBuilder.control([Validators.required])
+        })
+
+
+        this.editForm=this.formBuilder.group({
+            id:this.formBuilder.control([Validators.required]),
+            name:this.formBuilder.control([Validators.required]),
+            description:this.formBuilder.control([Validators.required]),
+            categorie:this.formBuilder.control([Validators.required]),
             img:this.formBuilder.control([Validators.required]),
             data:this.formBuilder.control([Validators.required])
         })
@@ -129,7 +144,20 @@ export class ManagementOfOrgansComponent implements OnInit, OnChanges {
     }
     setOrgan(id:number){
         this.selectedRow=this.organs.find(item=>item.id==id)
+        console.log(this.selectedRow)
 
+    }
+
+
+
+
+    ShowModalEdit(id:number){
+        this.setOrgan(id)
+       this.setSelectedOrgan(id)
+        this.editForm.get('name')?.setValue(this.selectedRow?.name);
+        this.editForm.get('description')?.setValue(this.selectedRow?.description);
+        this.editForm.get('idCat')?.setValue(this.selectedRow?.categorie);
+        this.editForm.get('id')?.setValue(this.selectedRow?.id);
     }
     deleteOrgan() {
 
@@ -146,5 +174,13 @@ export class ManagementOfOrgansComponent implements OnInit, OnChanges {
         }
 
         window.location.reload()
+    }
+
+    editOrgan() {
+        if(this.selectedRow){
+            console.log(this.selectedRow?.id)
+        }
+
+
     }
 }
