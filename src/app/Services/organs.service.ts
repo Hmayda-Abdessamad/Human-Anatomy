@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Categorie} from "../Models/categorie";
-import {catchError, map, Observable, throwError} from "rxjs";
+import {catchError, map, Observable, of, throwError} from "rxjs";
 import {Organ} from "../Models/organ";
 
 @Injectable({
@@ -31,19 +31,66 @@ export class OrgansService {
         );
   }
 
-    addOrgan(categorie:string, name: string, desc: string,img:File,data:File): Observable<String> {
+    addOrgan(categorie:string, name: string, desc: string,img:File,data:File): Observable<string>{
         const formData = new FormData();
+        formData.append("idCat",categorie);
         formData.append('img', img);
         formData.append('name', name);
-        formData.append('description', desc);
-        formData.append("idCat",categorie);
         formData.append("data",data)
-        return this.http.post<any>(`${this.url}/add`, formData);
+        formData.append('description', desc);
+        const headers = new HttpHeaders();
+        headers.append('Content-Type', 'multipart/form-data');
+
+
+        return this.http.post<string>(`${this.url}/add`, formData,{headers})
     }
 
     deleteOrgan(id: number): Observable<string> {
         const url = `${this.url}/delete/${id}`;
         return this.http.delete<string>(url);
+    }
+
+    getCategoryByObjectId(objectId: number): Observable<number> {
+        const url = `${this.url}/category`;
+
+        const params = new HttpParams().set('ObjectId', objectId.toString());
+
+        return this.http.get<number>(url, { params });
+    }
+
+    editOrgan( updatedOrgan: Organ): Observable<String> {
+        const url = `${this.url}/update`;
+        return this.http.put<String>(url, updatedOrgan)
+            .pipe(
+                catchError((err) => {
+                    // Handle error, if needed
+                    return throwError(err);
+                })
+            );
+    }
+
+    updateOrganImage(id: number, image: File): Observable<string> {
+        const formData: FormData = new FormData();
+        formData.append('id', id.toString());
+        formData.append('img', image);
+
+        const headers = new HttpHeaders();
+        headers.append('Content-Type', 'multipart/form-data'); // Usually not needed, Angular handles this
+
+        return this.http.put<string>(`${this.url}/updateImg`, formData, { headers });
+    }
+    updateOrganModel(id: number, file: File): Observable<string> {
+        const formData: FormData = new FormData();
+        formData.append('id', id.toString());
+        formData.append('data', file);
+
+        const headers = new HttpHeaders();
+        headers.append('Content-Type', 'multipart/form-data'); // Usually not needed, Angular handles this
+
+        return this.http.put<string>(`${this.url}/updateImg`, formData, { headers });
+    }
+    findAllByCategory(cat: number): Observable<any> {
+        return this.http.get(`${this.url}/category/${cat}`);
     }
 
 

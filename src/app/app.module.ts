@@ -6,7 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LandingPageComponent } from './Componants/landing-page/landing-page.component';
 import { LoginComponent } from './Componants/login/login.component';
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { HomeComponent } from './Componants/admin/home/home.component';
 import { AdminComponent } from './Componants/admin/admin.component';
 import { DataTablesModule } from "angular-datatables";
@@ -42,7 +42,8 @@ import {ManagementOfOrgansComponent} from "./Componants/admin/management-of-orga
         MatTableModule,
         MatPaginatorModule,
         MatSortModule,
-        NgbDropdownModule
+        NgbDropdownModule,
+        FormsModule
 
     ],
   providers: [CategoriesService],

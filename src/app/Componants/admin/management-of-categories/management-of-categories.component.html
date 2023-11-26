@@ -120,7 +120,7 @@
                               <div class="form-outline">
                                   <label class="form-label" for="image">Image</label>
                                   <div class="d-flex flex-column align-items-center">
-                                      <img id="image" [src]="selectedImage ? getImageUrl(selectedImage) : (url + selectedRow.image)"class="h-25 w-50 rounded-5 my-2" alt="{{selectedRow.name}}">
+                                      <img id="image" [src]="selectedImage ? getImageUrl(selectedImage) : (url + selectedRow.image)" class="h-25 w-50 rounded-5 my-2" alt="{{selectedRow.name}}">
                                       <input type="file" id="fileInput" (change)="onFileChanged($event)" accept="image/*" style="display: none">
                                       <button type="button" class="custom-file-button btn btn-warning"  onclick="document.getElementById('fileInput').click()">change the image </button>
                                   </div>

@@ -2,24 +2,26 @@
 
     <div class="container">
         <div class="row justify-content-between my-5">
-            <div class="col-auto">
-                <button class="btn btn-warning rounded-5 "  data-bs-toggle="modal" data-bs-target="#addModal" >
+            <div class="col-4">
+                <button class="btn btn-warning rounded-5 my-4"  data-bs-toggle="modal" data-bs-target="#addModal" >
                     Add a new  human organ
                 </button>
             </div>
-            <div class="col-auto">
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-warning rounded-5" type="submit">Search</button>
-                </form>
+
+            <div class="col-auto  ">
+                <label for="filter" class="text-white text-nowrap my-2"> Filter By category :</label>
+                <select class="form-select" id="filter" [(ngModel)]="FilterValue" (change)="onCategoryFilter()" aria-label="Default select example">
+                    <option [ngValue]="0" selected>Open this select menu</option>
+                    <option *ngFor="let category of categories" [ngValue]="category.id">{{category.name}}</option>
+                </select>
             </div>
         </div>
     </div>
 
         <div class="container">
-        <div class="row row-cols-1 row-cols-md-3 g-4 " >
+        <div class="row row-cols-1 row-cols-md-3 g-4 "  *ngIf="organs.length>0">
 
-            <div class="col"  *ngFor="let organ of organs">
+            <div class="col"   *ngFor="let organ of organs">
 
                 <div class="card d-flex h-100">
                     <div class="row g-0">
@@ -67,7 +69,15 @@
             </div>
 
         </div>
-    </div>
+            <div class="d-flex justify-content-center align-items-center"  *ngIf="!(organs.length>0)">
+                <div class="card w-100">
+                    <div class="card-body text-center">
+                       there is no  human organs for this category
+                    </div>
+                </div>
+            </div>
+
+        </div>
 </div>
 
 
@@ -123,10 +133,11 @@
                             <div class="input-group-prepend w-50">
                                 <label class="input-group-text" for="inputGroupSelect01">Select one category</label>
                             </div>
-                            <select class="custom-select w-50" id="inputGroupSelect01" formControlName="categorie">
-                                <option value="" disabled selected>Select a category</option>
+                            <select class="form-select w-50" id="inputGroupSelect01" formControlName="categorie">
+                                <option   selected> {{defaultCategorieName}}</option>
                                 <option [value]="category.id" *ngFor="let category of categories">{{ category.name }}</option>
                             </select>
+
                         </div>
 
                         <div class="form-outline d-flex flex-row gap-3 justify-content-center">
@@ -181,9 +192,10 @@
                             <div class="input-group-prepend w-50">
                                 <label class="input-group-text" for="inputGroupSelect02">Select one category</label>
                             </div>
-                            <select class="custom-select w-50" id="inputGroupSelect02" formControlName="categorie">
-                                <option value="{{selectedRow?.categorie.id}}"  selected> {{selectedRow?.categorie.name}}</option>
-                                <option [value]="category.id" *ngFor="let category of categories">{{ category.name }}</option>
+
+                            <select class="form-select"  id="inputGroupSelect02" aria-label="Default select example">
+                                <option value="{{defaultCategorieId}}" selected>{{defaultCategorieName}}</option>
+                                <option value="{{category.id}}" *ngFor="let category of categories"> {{category.name}}</option>
                             </select>
                         </div>
 
@@ -197,13 +209,16 @@
                         <div class="form-outline d-flex flex-row gap-3 justify-content-center">
 
                             <div class="form-outline">
+
                                 <label class="form-label fw-bold" for="image">Image</label>
+
                                 <div class="d-flex flex-column align-items-center">
-                                    <img id="image" [src]="this.url+selectedRow?.image" style="height: 23vh;" class="  my-2" >
-                                    <input type="file" id="fileInput" (change)="OnImgLoad($event)" accept=".gbl" style="display: none">
+                                    <img id="image" [src]="selectedImage ? src : (this.url+selectedRow?.image)" style="height: 23vh;" class="  my-2" >
+                                    <input type="file" id="fileInput" (change)="onFileChanged($event)" accept="image/**" style="display: none">
                                     <button type="button" class="custom-file-button btn btn-warning"  onclick="document.getElementById('fileInput').click()">change the image </button>
                                 </div>
                             </div>
+
                             <div class="form-outline">
                                 <label class="form-label fw-bold" for="image">3D Model </label>
                                 <div class="d-flex flex-column align-items-center">
@@ -211,15 +226,16 @@
                                     <div  *ngIf="isLoading" style="height: 25vh;" role="status">
                                         <span class="text-center">Loading...</span>
                                     </div>
-                                    <input type="file" id="3D" (change)="OnImgLoad($event)" accept=".gbl" style="display: none">
+                                    <input type="file" id="3D"    (change)="onObjectChange($event)" accept="image/**" style="display: none">
                                     <button type="button" class="custom-file-button btn btn-warning"  onclick="document.getElementById('3D').click()">change the model </button>
                                 </div>
                             </div>
+
                         </div>
 
                         <div class="modal-footer d-flex justify-content-center">
                             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"  >Close</button>
-                            <button type="submit" class="btn btn-success "  data-bs-dismiss="modal"  >Confirm </button>
+                            <button type="submit" class="btn btn-success "  data-bs-dismiss="modal" (click)="editOrgan()" >Confirm </button>
                         </div>
 
                     </form>

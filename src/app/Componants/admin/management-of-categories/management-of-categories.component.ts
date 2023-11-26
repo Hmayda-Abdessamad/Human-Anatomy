@@ -139,6 +139,7 @@ export class ManagementOfCategoriesComponent implements OnInit ,AfterViewInit,On
     };
 
     this.service.editCategory( updatedData).subscribe(
+
       (response) => {
         // Handle successful update response
         console.log('Category updated:', response);
@@ -148,7 +149,7 @@ export class ManagementOfCategoriesComponent implements OnInit ,AfterViewInit,On
                 (response) => {
                     // Handle successful image update response
                     console.log('Image updated:', response);
-
+                    window.location.reload();
                     // Now perform the category update after the image update
                 },
                 (error) => {
@@ -165,7 +166,7 @@ export class ManagementOfCategoriesComponent implements OnInit ,AfterViewInit,On
       }
     );
 
-      window.location.reload();
+
   }
 
       ngOnChanges(changes: SimpleChanges): void {

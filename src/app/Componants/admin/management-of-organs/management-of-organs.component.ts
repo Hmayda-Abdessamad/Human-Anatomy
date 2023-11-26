@@ -23,10 +23,14 @@ export class ManagementOfOrgansComponent implements OnInit, OnChanges {
     searchForm!:FormGroup
     addForm!:FormGroup
     editForm!: FormGroup;
+    defaultCategorie!:Categorie
+    defaultCategorieId!:number
+    defaultCategorieName!:String
     modelBlobURL: string = ''; // Variable to store the generated Blob URL
     isLoading: boolean = true;
     @ViewChild('searchInput') searchInput!: ElementRef;
     @ViewChild('modelViewer') modelViewer!: ElementRef<ModelViewerElement>;
+    addstatus:boolean=false
 
 
     constructor(private service: OrgansService,private formBuilder:FormBuilder,private http:HttpClient,private categorieService:CategoriesService) {}
@@ -87,18 +91,16 @@ export class ManagementOfOrgansComponent implements OnInit, OnChanges {
 
         const { name, description,categorie, img,data } = this.addForm.value;
 
+        this.addstatus=true
         if (img && name && description && categorie && data) {
-            this.service.addOrgan(categorie, name, description,img,data).subscribe(
-                (response) => {
-                    console.log('Category added successfully:', response);
-                    this.addForm.reset()
-                },
-                (error) => {
-                    console.error('Error adding category:', error);
-                    // Handle error responses
 
-                }
-            );
+            this.service.addOrgan(categorie, name, description,img,data).subscribe({
+              next: (v) => console.log(v),
+              error: (e) => console.error(e),
+              complete: () => console.info('complete')
+            });
+
+        console.log(categorie)
         } else {
             console.log("missing data")
         }
@@ -144,16 +146,29 @@ export class ManagementOfOrgansComponent implements OnInit, OnChanges {
     }
     setOrgan(id:number){
         this.selectedRow=this.organs.find(item=>item.id==id)
-        console.log(this.selectedRow)
+
 
     }
 
 
-
-
     ShowModalEdit(id:number){
+
         this.setOrgan(id)
-       this.setSelectedOrgan(id)
+        this.setSelectedOrgan(id)
+        this.service.getCategoryByObjectId(id).subscribe({
+            next:(resp)=>{
+                if(this.selectedRow){
+                    this.selectedRow.categorie=resp
+                    this.defaultCategorie=this.categories.filter(item=>item.id==resp)[0]
+                    this.defaultCategorieId=this.defaultCategorie.id
+                    this.defaultCategorieName=this.defaultCategorie.name
+                }
+
+            },
+            error:(err)=>{
+                console.log("error while loading category for Object"+id)
+            }
+        })
         this.editForm.get('name')?.setValue(this.selectedRow?.name);
         this.editForm.get('description')?.setValue(this.selectedRow?.description);
         this.editForm.get('idCat')?.setValue(this.selectedRow?.categorie);
@@ -177,10 +192,119 @@ export class ManagementOfOrgansComponent implements OnInit, OnChanges {
     }
 
     editOrgan() {
+
         if(this.selectedRow){
-            console.log(this.selectedRow?.id)
+            var  updatedData:Organ = {
+                id:this.selectedRow.id,
+                name: this.editForm.value.name,
+                description: this.editForm.value.description,
+                categorie: this.editForm.get('categorie')?.value
+            };
+
+
+            this.service.editOrgan(updatedData).subscribe({
+                next:(resp)=>{
+
+                },
+                error:(err)=>{
+                    console.log(err)
+                },
+                complete:()=>{
+                    console.log("static data changed")
+                    if(this.selectedImage && this.selectedRow){
+                        this.service.updateOrganImage(this.selectedRow.id,this.selectedImage).subscribe({
+                            next:(resp)=>{
+
+                            },
+                            error:(err)=>{
+                                console.log("err")
+                            },
+                            complete:()=>{
+                                console.log("image edited")
+                                this.selectedImage= null ;
+                                const input = document.getElementById('fileInput') as HTMLInputElement;
+                                if (input) {
+                                    input.value = ''; // Clear the input value
+                                }
+                                window.location.reload()
+                                if(this.selectedObject && this.selectedRow){
+                                    this.service.updateOrganModel(this.selectedRow.id,this.selectedObject).subscribe({
+                                        next:(resp)=>{
+                                            console.log(resp)
+                                        },
+                                        error:(err)=>{
+                                            console.log(err)
+                                        },
+                                        complete:()=>{
+                                            console.log("glb edited")
+                                            this.selectedObject= null ;
+                                            const input = document.getElementById('glb') as HTMLInputElement;
+                                            if (input) {
+                                                input.value = ''; // Clear the input value
+                                            }
+                                            window.location.reload()
+                                    }
+                                    })
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+
         }
 
 
     }
+
+
+    selectedImage: File | null = null;
+    selectedObject:File|null=null
+    src:string=""
+    onFileChanged(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files.length > 0) {
+            this.selectedImage = input.files[0];
+        }
+
+        if (this.selectedImage) {
+            this.src = this.getImageUrl(this.selectedImage)
+        }
+
+    }
+    onObjectChange(event:Event){
+        const input = event.target as HTMLInputElement;
+        this.isLoading=!this.isLoading
+        if (input.files && input.files.length > 0) {
+            this.selectedObject = input.files[0];
+        }
+    }
+    getImageUrl(image: File): string {
+        this.isLoading=!this.isLoading
+        return URL.createObjectURL(image);
+
+    }
+
+    FilterValue: number = 0;
+
+    getOrgansByCategoryId(id:number){
+
+        this.service.findAllByCategory(id).subscribe({
+            next:(resp)=>{
+                this.organs=resp
+            }
+        })
+    }
+
+    onCategoryFilter() {
+        console.log('Selected Category ID:', this.FilterValue);
+        if(this.FilterValue==0){
+            this.getAllOrgans()
+        }else{
+            this.getOrgansByCategoryId(this.FilterValue)
+            console.log("done")
+        }
+
+    }
+
 }
